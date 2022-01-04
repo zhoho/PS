@@ -1,0 +1,139 @@
+# 프로그래머스 1단계 50문제 격파 ~7/19
+
+# https://programmers.co.kr/learn/courses/30/lessons/12954
+# answer = []
+# def solution(x, n):
+#     for i in range(n):
+#         answer.append(x)
+#         x+=addnum
+#     return answer
+# x,n=map(int,input().split())
+# addnum=x
+# print(solution(x,n))
+
+# https://programmers.co.kr/learn/courses/30/lessons/12950
+# ans1=[]
+# ans2=[]
+# ans=[]
+# a=[[1,2],[2,3]]
+# b=[[4,5],[5,6]]
+# ans1.append((a[0][0]+b[0][0]))
+# ans1.append((a[0][1]+b[0][1]))
+# ans2.append((a[1][0]+b[1][0]))
+# ans2.append((a[1][1]+b[1][1]))
+# ans.append(ans1)
+# ans.append(ans2)
+# print(ans)
+
+
+# https://programmers.co.kr/learn/courses/30/lessons/12948
+# phone_number='010426010101043236'
+# phone_number=list(map(str,str(phone_number)))
+# PL=len(phone_number)
+# for i in range(PL-4):
+#   phone_number[i]='*'
+# answer="".join(phone_number)
+# print(answer)
+
+# https://programmers.co.kr/learn/courses/30/lessons/12947
+# def solution(x):
+#     xnum=x
+#     x=list(map(int,str(x)))
+#     if xnum%sum(x)==0:
+#         answer=(str(xnum)+'의 모든 자릿수의 합은'+str(sum(x))+'입니다.'+str(xnum)+'은 '+str(sum(x))+'로 나누어 떨어지므로 '+str(xnum)+'은 하샤드 수입니다.')
+#     else:
+#         answer=(str(xnum)+'의 모든 자릿수의 합은'+str(sum(x))+'입니다.'+str(xnum)+'은 '+str(sum(x))+'로 나누어 떨어지므로 '+str(xnum)+'은 하샤드 수가 아닙니다.')
+#     return answer
+
+# print(solution(1200))
+
+# def solution(arr):
+#     answer = sum(arr)/len(arr)
+#     return answer
+
+# https://programmers.co.kr/learn/courses/30/lessons/12943
+# def solution(num):
+#   answer=0
+#   for _ in range(500):
+#     if num==1:
+#       return answer
+#       break   
+#     elif num%2==0:
+#       num//=2
+#       answer+=1
+#     else:
+#       num=(num*3)+1
+#       answer+=1
+#   if num!=1:
+#     return -1
+
+
+# https://programmers.co.kr/learn/courses/30/lessons/12940
+
+# from math import gcd
+# def solution(n, m):
+#     answer = []
+#     answer.append(gcd(n,m)) #gcd
+#     answer.append((n*m)//gcd(n,m)) #lcm
+#     return answer
+
+# def solution(n):
+#   if n%2==0:
+#     return "Odd"
+#   else:
+#     return "Even"
+
+# https://programmers.co.kr/learn/courses/30/lessons/12935
+# def solution(arr):
+#     if arr==[10]:
+#         return [-1]
+#     else:
+#         arr.remove(min(arr))
+#         return arr
+
+# https://programmers.co.kr/learn/courses/30/lessons/12934
+# used math method
+# import math
+# def solution(n):
+#   x=math.sqrt(n)
+#   if x%1==0: #양의정수 check
+#     answer=(x+1)**2
+#   else:
+#     answer=-1
+#   return int(answer)
+
+# unused math method
+# def solution(n):
+#   x=n**(1/2)
+#   if x%1==0:
+#     answer=(x+1)**2
+#   else:
+#     answer=-1
+#   return int(answer)
+
+
+# https://programmers.co.kr/learn/courses/30/lessons/12933
+# def solution(n):
+#   n=list(str(n))
+#   n.sort(reverse=True)
+#   return int("".join(n))
+
+
+# https://programmers.co.kr/learn/courses/30/lessons/12932?language=python3
+# def solution(n):
+#   n=list(str(n))
+#   n.reverse()
+#   return list(map(int,n))
+
+
+# https://programmers.co.kr/learn/courses/30/lessons/12928
+# def solution(n):
+#   answer=0
+#   for i in range(1,n+1):
+#     if n%i==0:
+#       answer+=i
+#   return answer
+
+
+
+2022 testtest
