@@ -1,8 +1,6 @@
 n,m = map(int,input().split())
 ck = 0
-while n >= m:
-    if n == 1:
-        break
+while n != 1:
     if n % m == 0:
         n = n//m
     else:
