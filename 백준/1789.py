@@ -1,0 +1,9 @@
+s = int(input())
+n = 1
+n_sum = 0
+while(s > n_sum):
+    n_sum += n
+    n += 1
+if(s < n_sum):
+    n -= 1
+print(n - 1)
