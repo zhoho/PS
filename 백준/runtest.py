@@ -1,6 +1,20 @@
-t = int(input())
+n = int(input())
+cards = list(map(int, input().split(' ')))
+cards.sort()
 
-for i in range(t):
-    n = int(input())
-    for j in range(n):
-        print("j : ",j) #test
+m = int(input())
+targets = list(map(int, input().split(' ')))
+
+dic = dict()
+
+for i in cards:
+    if i in dic:
+        dic[i] += 1
+    else:
+        dic[i] = 1
+
+for i in range(m):
+    if targets[i] in dic:
+        print(dic[targets[i]], end=' ')
+    else:
+        print(0, end=' ')
