@@ -1,13 +1,30 @@
 n = int(input())
-nCard = list(map(int,input().split()))
+Ncard = sorted(list(map(int,input().split())))
 m = int(input())
-mCard = list(map(int,input().split()))
-count = 0
-haveCard = [0] * m
+Mcard = list(map(int,input().split()))
 
-for i in nCard:
-    if i in mCard:
-        mCard_index = mCard.index(i)
-        haveCard[mCard_index] += 1
+dic_count = {}
+for card in Ncard:
+    if card in count:
+        dic_count[card] += 1
+    else:
+        dic_count[card] = 1
+
+def binary_search(arr, target, start, end):
+    if start > end:
+        return 0
+    mid = (start + end) // 2
+    if arr[mid] == target:
+        return dic_count.get(target) #what??
+    elif arr[mid] < target:
+        return binary_search(arr, target, mid + 1, end)
+    else:
+        return binary_search(arr, target, start, mid - 1)
     
-print(*haveCard)
+
+for target in Mcard:
+    print(binary_search(Ncard, target, 0, n - 1), end=" ")
+
+
+
+
