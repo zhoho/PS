@@ -5,7 +5,7 @@ Mcard = list(map(int,input().split()))
 
 dic_count = {}
 for card in Ncard:
-    if card in count:
+    if card in dic_count:
         dic_count[card] += 1
     else:
         dic_count[card] = 1
