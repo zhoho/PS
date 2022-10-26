@@ -6,6 +6,6 @@ ans = 0
 
 for i in range(n):
     ans += (ord(words[i]) - 96) * (r ** i)
-
+ 
 print(ans % m)
 
