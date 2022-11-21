@@ -1,7 +1,6 @@
 # import math
 # n = int(input())
 # print(int(math.sqrt(n)))
-
 n = int(input())
 low = 1
 high = n
