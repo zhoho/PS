@@ -1,5 +1,54 @@
 /*
 
+    Extend your solution to Problem 2 to prevent the user from moving out of the working directory
+    Upgrade SplitCommandLine() to SplitCommandLine2().
+        - if the command contains an argument containing a directory, remove the directory name from the argument.
+        - if an argument contains "..", replace it by "."
+
+    Example)
+        Welcome to myshell.							// greeting message
+        All commands will be executed in "Working/".
+        Type "quit" to quit.
+        $ ls -al									// 'ls -al' command
+        argc = 2
+        argv[0] = ls
+        argv[1] = -al
+        argv[2] = (null)
+        total 0										// the working directory contains a text file 'test.txt'
+        drwxrwxrwx 1 callee callee 512 Mar 25 09:55 .
+        drwxrwxrwx 1 callee callee 512 Mar 25 10:18 ..
+        -rwxrwxrwx 1 callee callee   6 Mar 25 09:55 test.txt
+        $ ls ..										// the user tries to see the parent directory
+        argc = 2
+        argv[0] = ls
+        argv[1] = .									// ".." was replaced by "."
+        argv[2] = (null)
+        test.txt									// display only the current directory
+        $ cp test.txt ..							// the user tries to copy 'test.txt' to the parent directory
+        argc = 3
+        argv[0] = cp
+        argv[1] = test.txt
+        argv[2] = .									// ".." was replaced by "."
+        argv[3] = (null)
+        cp: 'test.txt' and './test.txt' are the same file	// the shell executed 'cp test.txt .'
+        $ vi ../test2.txt							// the user tries to create a file 'test2.txt' in the parent directory
+        argc = 2
+        argv[0] = vi
+        argv[1] = test2.txt							// "../test2.txt" was replaced by "test2.txt"
+        argv[2] = (null)
+        // the shell execute 'vi test2.txt'. the new file is created in the working directory
+        $ ls
+        argc = 1
+        argv[0] = ls
+        argv[1] = (null)
+        test.txt  test2.txt 						// the current directory contains 'test2.txt'
+        $ quit
+        Bye!
+
+
+    #################################################
+    # The followings are the description of Problem 2
+
     Write a shell (command line interpreter) that runs UNIX commands in a working directory following the instructions
         at startup, move into the working directory (the global variable working_dir).
             if the working directory does not exist, create it by calling the CheckAndCreateDirectory() function
@@ -69,7 +118,7 @@
 #define FALSE 0
 
 int CheckAndCreateDirectory(char *file_path);
-int SplitCommandLine(char *cmd, char *argv[]);
+int SplitCommandLine2(char *cmd, char *argv[]);
 
 char working_dir[256] = "Working/";
 
@@ -87,11 +136,8 @@ int main()
     }
 
     // TO DO: move into the working directory (call chdir())
-    if (chdir(working_dir) == -1)
-    {
-        perror("Error");
-    }
-    //		on failure, display an error message
+    //      on failure, display an error message
+
     while (1)
     {
         char cmd[256] = "";
@@ -107,7 +153,7 @@ int main()
         if (strcmp(cmd, "quit") == 0)
             break;
 
-        argc = SplitCommandLine(cmd, argv);
+        argc = SplitCommandLine2(cmd, argv);
 
 #ifdef _DEBUG
         printf("argc = %d\n", argc);
@@ -120,28 +166,6 @@ int main()
         // 		on failure of fork() or execvp(), display an error message
         //		for safety, call exit(-1) after execvp() in the child process
         //		the parent should wait for the child to terminate
-        if (argc > 0)
-        {
-            pid_t pid = fork();
-
-            if (pid == 0)
-            {
-                // child process
-                execvp(argv[0], argv);
-                printf("Failed to execute the command \"%s\".\n", cmd);
-                exit(-1);
-            }
-            else if (pid == -1)
-            {
-                printf("Failed to fork.\n");
-            }
-            else
-            {
-                // parent process
-                int status;
-                wait(&status);
-            }
-        }
     }
 
     printf("Bye!\n"); // this message MUST be displayed
@@ -153,7 +177,6 @@ int CheckAndCreateDirectory(char *file_path)
 // TO DO: check if the desination directory exists. otherwise, create the destination directory.
 // 		if the destination directory exists or successfully created, return TRUE
 //		otherwise, return FALSE
-//
 //		reuse your solution to the presvious homework with slight modification
 {
 
@@ -172,7 +195,6 @@ int CheckAndCreateDirectory(char *file_path)
     //					display an error message and return FALSE
     //
     //  return TRUE
-
     int len = strlen(file_path);
     char subdir[MAX_PATH] = "";
     int i;
@@ -206,11 +228,13 @@ int CheckAndCreateDirectory(char *file_path)
     return TRUE;
 }
 
-int SplitCommandLine(char *cmd, char *argv[])
+int SplitCommandLine2(char *cmd, char *argv[])
 // TO DO: cut the command into arguments
 //		return the number of arguments (argc)
 //		set argv[argc] to NULL
 //		- if an argument starts with a quote ('\"' or '\''), extract all characters, including whitespaces, upto the closing quote.
+//		- if an argument contains directories, discard directory names (e.g., "/home/user/test.c" --> "test.c")
+//		- if an argument is "..", replace it with "."
 //
 // example) cp test.c test2.c
 //		argc = 3
@@ -225,6 +249,12 @@ int SplitCommandLine(char *cmd, char *argv[])
 //		argv[1] = God bless you!
 //		argv[2] = (null)
 //
+// example) cp test.c ../test2.c
+//		argc = 3
+//		argv[0] = cp
+//		argv[1] = test.c
+//		argv[2] = test2.c			// directory name was discarded
+//		argv[3] = (null)
 {
     //	Algorithm
     //		set argc to zero
@@ -233,52 +263,79 @@ int SplitCommandLine(char *cmd, char *argv[])
     //				increase i to bypass the quote
     //				set argv[argc] to (cmd + i)	to store the starting address of a new argument into the argument array
     //				increase i until find the null character ('\0') or the closing quote
+    //					if cmd[i] is '/', set argv[argc] to (cmd + i + 1)		// modified
     //				increase argc
-    //				if cmd[i] is the null character, terminate the loop
+    //				if cmd[i] is the null character, decrease i to make the condition of the for-loop fail	// modified
     //				otherwise, set cmd[i] to zero to make the current argument a string
+    //				if the new argument is "..", replace it by "."				// modified
     //			otherwise, if cmd[i] is not a whitespace,			// use isspace() declared in ctype.h
     //				set argv[argc] to (cmd + i)	to store the starting address of a new argument into the argument array
     //				increase i until find the null character ('\0') or a whitespace
+    //					if cmd[i] is '/', set argv[argc] to (cmd + i + 1)		// modified
     //				increase argc
-    //				if cmd[i] is the null character, terminate the loop
+    //				if cmd[i] is the null character, decrease i to make the condition of the for-loop fail	// modified
     //				otherwise, set cmd[i] to zero to make the current argument a string
+    //				if the new argument is "..", replace it by "."				// modified
     //		set argv[argc] to NULL
     //		return argc
-    char quote;
+    //
+
+    // Algorithm
     int argc = 0;
-    int i;
-    for (i = 0; cmd[i];)
+    for (int i = 0; cmd[i] != '\0'; i++)
     {
         if (cmd[i] == '\"' || cmd[i] == '\'')
         {
-            quote = cmd[i];
-            argv[argc++] = cmd + i + 1;
             i++;
-            while (cmd[i] && cmd[i] != quote)
+            argv[argc] = (cmd + i);
+            while (cmd[i] != '\0' && cmd[i] != cmd[i - 1])
+            {
+                if (cmd[i] == '/')
+                {
+                    argv[argc] = (cmd + i + 1);
+                }
                 i++;
+            }
+            if (argv[argc][0] == '.' && argv[argc][1] == '.' && argv[argc][2] == '\0')
+            {
+                argv[argc] = ".";
+            }
+            argc++;
             if (cmd[i] == '\0')
-                break;
-            cmd[i] = '\0';
-            i++;
+            {
+                i--;
+            }
+            else
+            {
+                cmd[i] = '\0';
+            }
         }
         else if (!isspace(cmd[i]))
         {
-            argv[argc++] = cmd + i;
-            while (cmd[i] && !isspace(cmd[i]))
+            argv[argc] = (cmd + i);
+            while (cmd[i] != '\0' && !isspace(cmd[i]))
             {
+                if (cmd[i] == '/')
+                {
+                    argv[argc] = (cmd + i + 1);
+                }
                 i++;
             }
+            if (argv[argc][0] == '.' && argv[argc][1] == '.' && argv[argc][2] == '\0')
+            {
+                argv[argc] = ".";
+            }
+            argc++;
             if (cmd[i] == '\0')
-                break;
-            cmd[i] = '\0';
-            i++;
-        }
-        else
-        {
-            i++;
+            {
+                i--;
+            }
+            else
+            {
+                cmd[i] = '\0';
+            }
         }
     }
     argv[argc] = NULL;
-
     return argc;
 }
