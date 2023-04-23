@@ -9,6 +9,7 @@ char code[num_chars][100];
 
 int Char2Index(char letter);
 char Index2Char(int index);
+void EncodeText(char *text);
 
 struct zNode
 {
@@ -56,7 +57,7 @@ struct zNode *ExtractMin(struct Queue *Q);
 int CheckQueueLen(struct Queue *Q);
 
 struct zNode *HuffmanCode(char *text);
-void GetHuffmanCode(struct zNode *codeTree, char *so_far);
+void GetHuffmanCode(struct zNode *codeTree, char *so_far, int depth);
 void PrintHuffmanCode(struct zNode *codeTree);
 
 int main(void)
@@ -79,40 +80,44 @@ int main(void)
     // print your optimal Huffman code
     PrintHuffmanCode(codeTree);
 
-    // print the total number of bits required
-    int sum = 0;
-    for (int i = 0; i < num_chars; i++)
-    {
-        sum += charFreq[i] * strlen(code[i]);
-    }
-    printf("Total number of bits required for the given text: %d\n", sum);
+    printf("Print Encode Text:\n");
+    EncodeText(text);
+
+    // int sum = 0;
+    // for (int i = 0; i < num_chars; i++) {
+    //  sum += charFreq[i] * 8;
+    //   //printf("%d\n",charFreq[i]);
+    // }
+    // printf("Total number of bits required for the given text: %d\n", sum);
 
     return 0;
 }
 
-void GetHuffmanCode(struct zNode *codeTree, char *so_far)
+void GetHuffmanCode(struct zNode *codeTree, char *so_far, int depth)
 {
     if (codeTree->left->letter != 0x00)
     {
-        printf("%c: %s\n", codeTree->left->letter, so_far); // Print the Huffman code for the current leaf node
+        int index = Char2Index(codeTree->left->letter);
+        strcpy(code[index], so_far);
     }
     else
     {
         char temp[100] = "";
         strcpy(temp, so_far);
-        strcat(temp, "0"); // Append "0" to the current code prefix to get the left child's code
-        GetHuffmanCode(codeTree->left, temp);
+        strcat(temp, "0");
+        GetHuffmanCode(codeTree->left, temp, depth + 1);
     }
     if (codeTree->right->letter != 0x00)
     {
-        printf("%c: %s\n", codeTree->right->letter, so_far); // Print the Huffman code for the current leaf node
+        int index = Char2Index(codeTree->right->letter);
+        strcpy(code[index], so_far);
     }
     else
     {
         char temp[100] = "";
         strcpy(temp, so_far);
-        strcat(temp, "1"); // Append "1" to the current code prefix to get the right child's code
-        GetHuffmanCode(codeTree->right, temp);
+        strcat(temp, "1");
+        GetHuffmanCode(codeTree->right, temp, depth + 1);
     }
 }
 
@@ -122,15 +127,29 @@ void PrintHuffmanCode(struct zNode *codeTree)
         strcpy(code[i], "");
 
     char so_far[100] = "";
-    GetHuffmanCode(codeTree, so_far);
+    GetHuffmanCode(codeTree, so_far, 0);
 
     for (int i = 0; i < num_chars; i++)
     {
         if (charFreq[i] != 0)
         {
-            // printf("%c: %s\n", Index2Char(i), code[i]);
+            printf("%c: %s\n", Index2Char(i), code[i]);
         }
     }
+}
+
+void EncodeText(char *text)
+{
+    int textLen = strlen(text);
+    int encodedLen = 0;
+    for (int i = 0; i < textLen; i++)
+    {
+        int index = Char2Index(text[i]);
+        encodedLen += strlen(code[index]);
+        printf("%s", code[index]);
+    }
+    printf("\n");
+    printf("Total number of bits requiredd for the given text: %d", encodedLen);
 }
 
 struct zNode *HuffmanCode(char *text)
