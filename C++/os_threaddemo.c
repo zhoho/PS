@@ -21,7 +21,7 @@ int main()
     int i = 0;
     for (i = 0; i < NO_THREAD; i++)
     {
-        arg[i].int_arg = ... arg[i].char_arg = ... pthread_create(&tid[i], NULL, thread_fn, &arg[i]);
+        arg[i].int_arg = arg[i].char_arg = pthread_create(&tid[i], NULL, thread_fn, &arg[i]);
     }
 
     for (i = 0; i < NO_THREAD; i++)
@@ -37,7 +37,7 @@ void *thread_fn(void *arg)
     Thread_Arg *targ = (Thread_Arg *)arg;
 
     //	int *int_arg = (int*)arg;
-    printf("Hello, World (idx = %d)\n", *int_arg);
+    printf("Hello, World (idx = %d)\n", (int *)arg);
 
     return NULL;
 }
