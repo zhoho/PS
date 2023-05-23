@@ -148,6 +148,9 @@ int main(int argc, char *argv[])
     pthread_mutex_t mutex;
     sem_t empty, full;
 
+    pthread_mutex_init(&mutex, NULL);
+    sem_init(&empty, 0, BUFFER_SIZE);
+    sem_init(&full, 0, 0);
     // TO DO: initialize mutex and semaphores
 
     StringBuffer sb;
@@ -155,13 +158,29 @@ int main(int argc, char *argv[])
 
     ThreadParam param[2];
     // TO DO: fill out param[0] for the producer
+    param[0].p_sb = &sb;
+    param[0].p_cont = &thread_cont;
+    param[0].delay = producer_delay;
+    param[0].p_mutex = &mutex;
+    param[0].p_empty = &empty;
+    param[0].p_full = &full;
     // 	  and fill out param[1] for the consumer
+    param[1].p_sb = &sb;
+    param[1].p_cont = &thread_cont;
+    param[1].delay = consumer_delay;
+    param[1].p_mutex = &mutex;
+    param[1].p_empty = &empty;
+    param[1].p_full = &full;
 
     // TO DO: create two threads: one of producer, the other for consumer
+    pthread_t producer_thread, consumer_thread;
+    pthread_create(&producer_thread, NULL, Producer, (void *)&param[0]);
+    pthread_create(&consumer_thread, NULL, Consumer, (void *)&param[1]);
 
-    sleep(duration); // wait for 30 sec
+    sleep(duration);
 
     // TO DO: terminate threads by setting thread_cont to FALSE;
+    thread_cont = FALSE;
 
     sleep(1);
 
@@ -181,9 +200,14 @@ int main(int argc, char *argv[])
     }
 
     // TO DO: wait for the producer and consumer to terminate
+    pthread_join(producer_thread, NULL);
+    pthread_join(consumer_thread, NULL);
 
-    printf("Destroying mutex and semaphores\n");
     // TO DO: destroy mutext and semaphores
+    printf("Destroying mutex and semaphores\n");
+    pthread_mutex_destroy(&mutex);
+    sem_destroy(&empty);
+    sem_destroy(&full);
 
     printf("Bye!\n"); // this message MUST be displayed
 
@@ -251,19 +275,24 @@ void *Producer(void *arg)
         // remainder section
         // TO DO: produce a message in mesg
         // 		randomly select a message from message_array and copy it into mesg
-
+        int random_index = rand() % no_message;
+        strcpy(mesg, message_array[random_index]);
         printf("[producer] created a message [%s].\n", mesg);
 
         // entry section
         // TO DO: implement the entry section of the producer-consumer solution
+        sem_wait(param->p_empty);
+        pthread_mutex_lock(param->p_mutex);
 
         // critical section
         // TO DO: insert mesg into the string buffer
-
+        StringBuffer_Insert(param->p_sb, mesg);
         printf("[producer] inserted message into the buffer (count = %d) [%s].\n", param->p_sb->count, mesg);
 
         // exit section
         // TO DO: implement the exit section of the producer-consumer solution
+        pthread_mutex_unlock(param->p_mutex);
+        sem_post(param->p_full);
 
         // remainder section
         sleep(param->delay);
@@ -281,14 +310,18 @@ void *Consumer(void *arg)
 
         // entry section
         // TO DO: implement the entry section of the producer-consumer solution
+        sem_wait(param->p_full);
+        pthread_mutex_lock(param->p_mutex);
 
         // critical section
         // TO DO: delete a message from the buffer and store it into mesg
-
+        StringBuffer_Delete(param->p_sb, mesg);
         printf("\t[consumer] deleted message from the buffer (count = %d) [%s].\n", param->p_sb->count, mesg);
 
         // exit section
         // TO DO: implement the exit section of the producer-consumer solution
+        pthread_mutex_unlock(param->p_mutex);
+        sem_post(param->p_empty);
 
         // remainder section
         printf("\t[consumer] consuming message [%s].\n", mesg);
