@@ -1,4 +1,5 @@
-public static int numberOfZeros(int n)
+
+public static class numberOfZeros(int n)
 {
     if(n == 0)
     {
