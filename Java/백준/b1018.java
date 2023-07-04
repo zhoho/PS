@@ -8,7 +8,10 @@ public class b1018 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] inputs = br.readLine().split(" ");
 
-        int m = Integer.parseInt(inputs[0]);
-        int n = Integer.parseInt(inputs[1]);
+        int n = Integer.parseInt(inputs[0]);
+        int m = Integer.parseInt(inputs[1]);
+
+        boolean[][] arr = new boolean[n][m];
+
     }
 }
