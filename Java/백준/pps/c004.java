@@ -5,17 +5,22 @@ import java.util.Scanner;
 public class c004 {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        int sum = 0;
-        int ori = 0;
-        int n = in.nextInt();
-        ori = n;
-        for (int i = 0; i < (int) (Math.log10(n) + 1); i++) {
+        int result = 0;
+        int N = in.nextInt();
+        for (int i = 0; i < N; i++) {
+            int temp = i;
+            int sum = 0;
 
-            sum += n % 10;
-            n = n / 10;
+            while (temp != 0) {
+                sum += temp % 10;
+                temp /= 10;
+            }
 
-            System.out.println(i);
+            if (sum + i == N) {
+                result = i;
+                break;
+            }
         }
-        // System.out.println(sum);
+        System.out.println(result);
     }
 }
