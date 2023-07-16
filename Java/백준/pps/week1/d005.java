@@ -1,4 +1,4 @@
-package 백준.pps;
+package 백준.pps.week1;
 
 import java.util.*;
 import java.io.*;
