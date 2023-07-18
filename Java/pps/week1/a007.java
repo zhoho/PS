@@ -1,4 +1,4 @@
-package 백준.pps.week1;
+package pps.week1;
 
 import java.util.Arrays;
 import java.util.Scanner;
