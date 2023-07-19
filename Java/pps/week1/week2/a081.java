@@ -22,4 +22,5 @@ public class a081 {
             System.out.println(arr[7]);
         }
     }
+
 }
