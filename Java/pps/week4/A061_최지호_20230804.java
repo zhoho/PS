@@ -1,6 +1,7 @@
 //릿코드 솔루션 참고
 class Solution {
     public String convertToTitle(int columnNumber) {
+
         String str = "";
 
         while (columnNumber > 0) {
