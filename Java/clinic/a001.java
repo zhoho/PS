@@ -10,7 +10,7 @@ class Main {
         Scanner s = new Scanner(System.in);
         System.out.print("Enter a birth year > ");
         int birthyear = s.nextInt();
-        int age = 2022 - birthyear;
+        int age = 2022 - birthyear; 
         System.out.println("You are " + age + " years old.");
     }
 }
