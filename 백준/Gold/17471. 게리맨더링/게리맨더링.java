@@ -37,7 +37,7 @@ public class Main {
         }  
         dfs(0);
         
-        if(ans == Integer.MAX_VALUE ) {
+        if(ans == Integer.MAX_VALUE) {
         	System.out.println(-1);
         }
         else {
@@ -45,7 +45,7 @@ public class Main {
         }
 	}
 	private static void dfs(int idx) {
-		if(idx == n-1) {
+		if(idx == n - 1) {
 			check();
 			return;
 		}
@@ -56,11 +56,11 @@ public class Main {
 		visited[idx] = false;
 		dfs(idx + 1);
 	}
+	
 	private static void check() {
 		ArrayList<Integer> groupA = new ArrayList<>();
 		ArrayList<Integer> groupB = new ArrayList<>();
 		
-		// 틀린 부분
 		for(int i = 0; i < n; i++) {
 			if(visited[i]) {
 				groupA.add(i);
@@ -69,11 +69,9 @@ public class Main {
 				groupB.add(i);
 			}
 		}
-	
 		if(groupA.isEmpty() || groupB.isEmpty()) {
 			return;
 		}
-		// 틀린 부분
 		
 		if(isConnected(groupA) && isConnected(groupB)) {
 			int sumA = 0;
@@ -81,19 +79,18 @@ public class Main {
 			for(int i : groupA) {
 				sumA += population[i];
 			}
-			
 			for(int i : groupB) {
 				sumB += population[i];
 			}
 			ans = Math.min(ans, Math.abs(sumA-sumB));
 		}
-
 	}
+	
 	private static boolean isConnected(ArrayList<Integer> group) {
 		boolean[] visit = new boolean[n];
 		Queue<Integer> q = new LinkedList<>();
-		q.offer(group.get(0));
-		visit[group.get(0)]= true;
+		q.add(group.get(0));
+		visit[group.get(0)] = true;
 		
 		int count = 1;
 		while(!q.isEmpty()) {
